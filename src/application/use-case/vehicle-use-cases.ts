@@ -1,7 +1,9 @@
+import { GetVehicleResponse } from "@src/domain/entities/dtos/responses/get-vehicle.response";
 import { CommentEntity } from "../../domain/entities/comment.entity";
 import { VehicleEntity } from "../../domain/entities/vehicle.entity";
 import { VehicleInterface } from "../../domain/interfaces/vehicle.interface";
 import signale from "signale";
+import { UpdateVehicleRequest } from "@src/domain/entities/dtos/requests/update-vehicle.request";
 
 export class VehicleUseCases {
     constructor(readonly vehicleRepository: VehicleInterface) {}
@@ -17,7 +19,7 @@ export class VehicleUseCases {
         return createdVehicle;
     }
 
-    async getVehicleByUuid(uuid: number): Promise<VehicleEntity | null> {
+    async getVehicleByUuid(uuid: string): Promise<GetVehicleResponse | null> {
         const vehicle = await this.vehicleRepository.getVehicleByUuid(uuid);
 
         if (!vehicle) {
@@ -28,7 +30,7 @@ export class VehicleUseCases {
         return vehicle;
     }
 
-    async getVehicles(): Promise<VehicleEntity[]> {
+    async getVehicles(): Promise<GetVehicleResponse[]> {
         const vehicles = await this.vehicleRepository.getVehicles();
 
         if (!vehicles) {
@@ -39,8 +41,30 @@ export class VehicleUseCases {
         return vehicles;
     }
 
-    async updateVehicle(vehicle: VehicleEntity): Promise<string | null> {
-        const updatedVehicle = await this.vehicleRepository.updateVehicle(vehicle);
+    async getAvalibleVehicles(): Promise<GetVehicleResponse[]> {
+        const vehicles = await this.vehicleRepository.getAvalibleVehicles();
+
+        if (!vehicles) {
+            signale.error("Vehicles not found");
+            return [];
+        }
+
+        return vehicles;
+    }
+
+    async getVehiclesByText(text: string): Promise<GetVehicleResponse[]> {
+        const vehicles = await this.vehicleRepository.getVehicles();
+
+        if (!vehicles) {
+            signale.error("Vehicles not found");
+            return [];
+        }
+
+        return vehicles;
+    }
+
+    async updateVehicle(uuid: string, vehicle: UpdateVehicleRequest): Promise<string | null> {
+        const updatedVehicle = await this.vehicleRepository.updateVehicle(uuid, vehicle);
 
         if (!updatedVehicle) {
             signale.error("Error updating vehicle");
@@ -50,7 +74,7 @@ export class VehicleUseCases {
         return updatedVehicle;
     }
 
-    async deleteVehicle(id: number): Promise<boolean> {
+    async deleteVehicle(id: string): Promise<boolean> {
         const deletedVehicle = await this.vehicleRepository.deleteVehicle(id);
 
         if (!deletedVehicle) {
@@ -61,7 +85,7 @@ export class VehicleUseCases {
         return true;
     }
 
-    async getVehicleByUserUuid(uuid: number): Promise<VehicleEntity[]> {
+    async getVehicleByUserUuid(uuid: string): Promise<VehicleEntity[]> {
         const vehicles = await this.vehicleRepository.getVehicleByUserUuid(uuid);
 
         if (!vehicles) {
@@ -72,7 +96,7 @@ export class VehicleUseCases {
         return vehicles;
     }
 
-    async addCommentToVehicle(vehicleUuid: number, comment: CommentEntity): Promise<string | null> {
+    async addCommentToVehicle(vehicleUuid: string, comment: CommentEntity): Promise<string | null> {
         const addedComment = await this.vehicleRepository.addCommentToVehicle(vehicleUuid, comment);
 
         if (!addedComment) {
@@ -83,7 +107,7 @@ export class VehicleUseCases {
         return addedComment;
     }
 
-    async getCommentsFromVehicle(vehicleUuid: number): Promise<CommentEntity[]> {
+    async getCommentsFromVehicle(vehicleUuid: string): Promise<CommentEntity[]> {
         const comments = await this.vehicleRepository.getCommentsFromVehicle(vehicleUuid);
 
         if (!comments) {

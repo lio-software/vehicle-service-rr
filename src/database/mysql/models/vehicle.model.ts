@@ -10,6 +10,7 @@ export interface VehicleAttributes {
     year: number;
     color: string;
     plate: string;
+    rentalPrice: number;
     avalible: boolean;
     address: string;
     description: string;
@@ -77,6 +78,12 @@ export default class VehicleModel extends Model implements  VehicleAttributes {
         type: DataType.STRING,
     })
     declare plate: string;
+
+    @Column({
+        allowNull: false,
+        type: DataType.DOUBLE,
+    })
+    declare rentalPrice: number;
 
     @Column({
         allowNull: true,

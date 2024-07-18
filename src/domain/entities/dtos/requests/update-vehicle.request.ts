@@ -1,8 +1,4 @@
-export class VehicleEntity {
-    public id: number;
-    public type: string;
-    public userId: number;
-    public stars: number;
+export class UpdateVehicleRequest {
     public brand: string;
     public model: string;
     public year: number;
@@ -12,13 +8,8 @@ export class VehicleEntity {
     public avalible: boolean;
     public address: string;
     public description: string;
-    public uuid: string;
 
     constructor(
-        id: number,
-        type: string,
-        userId: number,
-        stars: number,
         brand: string,
         model: string,
         year: number,
@@ -28,12 +19,7 @@ export class VehicleEntity {
         avalible: boolean,
         address: string,
         description: string,
-        uuid: string
     ) {
-        this.id = id;
-        this.type = type;
-        this.userId = userId;
-        this.stars = stars;
         this.brand = brand;
         this.model = model;
         this.year = year;
@@ -43,6 +29,5 @@ export class VehicleEntity {
         this.avalible = avalible;
         this.address = address;
         this.description = description;
-        this.uuid = uuid;
     }
 }

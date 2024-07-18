@@ -1,5 +1,4 @@
-export class VehicleEntity {
-    public id: number;
+export class GetVehicleResponse {
     public type: string;
     public userId: number;
     public stars: number;
@@ -8,14 +7,13 @@ export class VehicleEntity {
     public year: number;
     public color: string;
     public plate: string;
-    public rentalPrice: number;
     public avalible: boolean;
+    public rentalPrice: number;
     public address: string;
     public description: string;
     public uuid: string;
 
     constructor(
-        id: number,
         type: string,
         userId: number,
         stars: number,
@@ -30,7 +28,6 @@ export class VehicleEntity {
         description: string,
         uuid: string
     ) {
-        this.id = id;
         this.type = type;
         this.userId = userId;
         this.stars = stars;

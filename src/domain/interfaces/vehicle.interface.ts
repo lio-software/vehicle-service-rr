@@ -1,13 +1,18 @@
 import { CommentEntity } from "../entities/comment.entity";
+import { UpdateVehicleRequest } from "../entities/dtos/requests/update-vehicle.request";
+import { GetVehicleResponse } from "../entities/dtos/responses/get-vehicle.response";
 import { VehicleEntity } from "../entities/vehicle.entity";
 
 export interface VehicleInterface {
     createVehicle(vehicle: VehicleEntity): Promise<string | null>;
-    getVehicleByUuid(id: number): Promise<VehicleEntity | null>;
-    getVehicles(): Promise<VehicleEntity[]>;
-    updateVehicle(vehicle: VehicleEntity): Promise<string | null>;
-    deleteVehicle(id: number): Promise<boolean>;
-    getVehicleByUserUuid(uuid: number): Promise<VehicleEntity[]>;
-    addCommentToVehicle(vehicleUuid: number, comment: CommentEntity): Promise<string | null>;
-    getCommentsFromVehicle(vehicleUuid: number): Promise<CommentEntity[]>;
+    getVehicleByUuid(id: string): Promise<GetVehicleResponse | null>;
+    getVehicles(): Promise<GetVehicleResponse[]>;
+    getAvalibleVehicles(): Promise<GetVehicleResponse[]>;
+    getVehicleByText(text: string): Promise<GetVehicleResponse[]>;
+    updateVehicle(uuid: string, vehicle: UpdateVehicleRequest): Promise<string | null>;
+    deleteVehicle(id: string): Promise<boolean>;
+    getVehicleByUserUuid(uuid: string): Promise<VehicleEntity[]>;
+    addCommentToVehicle(vehicleUuid: string, comment: CommentEntity): Promise<string | null>;
+    getCommentsFromVehicle(vehicleUuid: string): Promise<CommentEntity[]>;
+
 }

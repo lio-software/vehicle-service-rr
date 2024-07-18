@@ -74,11 +74,57 @@ export class VehicleController {
         }
     }
 
+    async getAvalibleVehicles(req: any, res: any): Promise<void> {
+        try {
+            const vehicles = await this.vehicleUseCases.getAvalibleVehicles();
+
+            if (!vehicles) {
+                const response = new BaseResponse({}, "Avalible vehicles not found");
+
+                return res.status(404).json(response);
+            }
+
+            const response = new BaseResponse(vehicles, "Avalible vehicles found successfully");
+
+            return res.status(200).json(response);
+        } catch (error) {
+            const errors = (error as any).errors.map((err: any) => err.message);
+
+            const response = new BaseResponse({}, errors);
+
+            return res.status(500).json(response);
+        }
+    }
+
+    async getVehiclesByText(req: any, res: any): Promise<void> {
+        const text = req.params;
+        try {
+            const vehicles = await this.vehicleUseCases.getVehiclesByText(text);
+
+            if (!vehicles) {
+                const response = new BaseResponse({}, "Vehicles not found");
+
+                return res.status(404).json(response);
+            }
+
+            const response = new BaseResponse(vehicles, "Vehicles found successfully");
+
+            return res.status(200).json(response);
+        } catch (error) {
+            const errors = (error as any).errors.map((err: any) => err.message);
+
+            const response = new BaseResponse({}, errors);
+
+            return res.status(500).json(response);
+        }
+    }
+
     async updateVehicle(req: any, res: any): Promise<void> {
         const vehicle = req.body;
+        const { uuid } = req.params;
 
         try {
-            const vehicleUuid = await this.vehicleUseCases.updateVehicle(vehicle);
+            const vehicleUuid = await this.vehicleUseCases.updateVehicle(uuid, vehicle);
 
             if (!vehicleUuid) {
                 const response = new BaseResponse({}, "Error updating vehicle");
