@@ -4,15 +4,17 @@ import { VehicleInterface } from "../../domain/interfaces/vehicle.interface";
 import VehicleModel from "../../database/mysql/models/vehicle.model";
 import CommentModel from "../../database/mysql/models/comment.model";
 import { GetVehicleResponse } from "../../domain/entities/dtos/responses/get-vehicle.response";
-import { UpdateVehicleRequest } from "@src/domain/entities/dtos/requests/update-vehicle.request";
+import { UpdateVehicleRequest } from "../../domain/entities/dtos/requests/update-vehicle.request";
+import { CreateVehicleRequest } from "../../domain/entities/dtos/requests/create-vehicle.request";
+import VehicleImageModel from "../../database/mysql/models/vehicle-image.model";
 
 export class MysqlVehicleRepository implements VehicleInterface {
-    public async createVehicle(vehicle: VehicleEntity): Promise<string | null> {
+    public async createVehicle(vehicle: CreateVehicleRequest): Promise<string | null> {
         try {
             const createdVehicle = await VehicleModel.create({
                 type: vehicle.type,
                 userId: vehicle.userId,
-                stars: vehicle.stars,
+                stars: 0,
                 brand: vehicle.brand,
                 model: vehicle.model,
                 year: vehicle.year,
@@ -23,6 +25,13 @@ export class MysqlVehicleRepository implements VehicleInterface {
                 address: vehicle.address,
                 description: vehicle.description
             });
+
+            const createdImages = await VehicleImageModel.bulkCreate(vehicle.vehicleImages.map((image) => {
+                return {
+                    vehicleId: createdVehicle.id,
+                    imageUrl: image,
+                };
+            }));
 
             return createdVehicle.uuid;
         } catch (error) {
@@ -42,6 +51,12 @@ export class MysqlVehicleRepository implements VehicleInterface {
                 return null;
             }
 
+            const images = await VehicleImageModel.findAll({
+                where: {
+                    vehicleId: vehicle.id,
+                },
+            });
+
             return new GetVehicleResponse(
                 vehicle.type,
                 vehicle.userId,
@@ -55,6 +70,7 @@ export class MysqlVehicleRepository implements VehicleInterface {
                 vehicle.avalible,
                 vehicle.address,
                 vehicle.description,
+                images.map((image) => image.imageUrl),
                 vehicle.uuid
             )
         } catch (error) {
@@ -66,7 +82,13 @@ export class MysqlVehicleRepository implements VehicleInterface {
         try {
             const vehicles = await VehicleModel.findAll();
 
-            return vehicles.map((vehicle) => {
+            const response = await Promise.all(vehicles.map(async (vehicle) => {
+                const images = await VehicleImageModel.findAll({
+                    where: {
+                        vehicleId: vehicle.id,
+                    },
+                });
+
                 return new GetVehicleResponse(
                     vehicle.type,
                     vehicle.userId,
@@ -80,9 +102,12 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicle.avalible,
                     vehicle.address,
                     vehicle.description,
+                    images.map((image) => image.imageUrl),
                     vehicle.uuid
                 );
-            });
+            }));
+
+            return response;
         } catch (error) {
             return [];
         }
@@ -96,7 +121,13 @@ export class MysqlVehicleRepository implements VehicleInterface {
                 }
             })
 
-            return vehicles.map((vehicle) => {
+            const response = await Promise.all(vehicles.map(async (vehicle) => {
+                const images = await VehicleImageModel.findAll({
+                    where: {
+                        vehicleId: vehicle.id,
+                    },
+                });
+
                 return new GetVehicleResponse(
                     vehicle.type,
                     vehicle.userId,
@@ -110,9 +141,12 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicle.avalible,
                     vehicle.address,
                     vehicle.description,
+                    images.map((image) => image.imageUrl),
                     vehicle.uuid
                 );
-            });
+            }));
+
+            return response;
         } catch (error) {
             return [];
         }
@@ -122,7 +156,13 @@ export class MysqlVehicleRepository implements VehicleInterface {
         try {
             const vehicles = await VehicleModel.findAll();
 
-            return vehicles.map((vehicle) => {
+            const response = await Promise.all(vehicles.map(async (vehicle) => {
+                const images = await VehicleImageModel.findAll({
+                    where: {
+                        vehicleId: vehicle.id,
+                    },
+                });
+
                 return new GetVehicleResponse(
                     vehicle.type,
                     vehicle.userId,
@@ -136,13 +176,17 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicle.avalible,
                     vehicle.address,
                     vehicle.description,
+                    images.map((image) => image.imageUrl),
                     vehicle.uuid
                 );
-            });
+            }));
+
+            return response;
         } catch (error) {
             return [];
         }
     }
+
 
     public async updateVehicle(uuid: string, vehicle: UpdateVehicleRequest): Promise<string | null> {
         try {
