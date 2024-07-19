@@ -1,3 +1,4 @@
+import { CreateVehicleRequest } from "../../domain/entities/dtos/requests/create-vehicle.request";
 import { VehicleUseCases } from "../../application/use-case/vehicle-use-cases";
 import { BaseResponse } from "../../domain/entities/dtos/responses/base.response";
 
@@ -5,7 +6,7 @@ export class VehicleController {
     constructor(readonly vehicleUseCases: VehicleUseCases) {}
 
     async createVehicle(req: any, res: any): Promise<void> {
-        const vehicle = req.body;
+        const vehicle: CreateVehicleRequest = req.body;
 
         try {
             const vehicleUuid = await this.vehicleUseCases.createVehicle(vehicle);

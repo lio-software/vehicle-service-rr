@@ -1,10 +1,11 @@
 import { CommentEntity } from "../entities/comment.entity";
+import { CreateVehicleRequest } from "../entities/dtos/requests/create-vehicle.request";
 import { UpdateVehicleRequest } from "../entities/dtos/requests/update-vehicle.request";
 import { GetVehicleResponse } from "../entities/dtos/responses/get-vehicle.response";
 import { VehicleEntity } from "../entities/vehicle.entity";
 
 export interface VehicleInterface {
-    createVehicle(vehicle: VehicleEntity): Promise<string | null>;
+    createVehicle(vehicle: CreateVehicleRequest): Promise<string | null>;
     getVehicleByUuid(id: string): Promise<GetVehicleResponse | null>;
     getVehicles(): Promise<GetVehicleResponse[]>;
     getAvalibleVehicles(): Promise<GetVehicleResponse[]>;
