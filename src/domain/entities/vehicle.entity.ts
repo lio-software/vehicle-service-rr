@@ -1,7 +1,7 @@
 export class VehicleEntity {
     public id: number;
     public type: string;
-    public userId: number;
+    public userId: string;
     public stars: number;
     public brand: string;
     public model: string;
@@ -17,7 +17,7 @@ export class VehicleEntity {
     constructor(
         id: number,
         type: string,
-        userId: number,
+        userId: string,
         stars: number,
         brand: string,
         model: string,

@@ -1,15 +1,15 @@
 export class CommentEntity {
     public id: number;
-    public userId: number;
-    public vehicleId: number;
+    public userId: string;
+    public vehicleId: string;
     public stars: number;
     public text: string;
     public uuid: string;
 
     constructor(
         id: number,
-        userId: number,
-        vehicleId: number,
+        userId: string,
+        vehicleId: string,
         stars: number,
         text: string,
         uuid: string

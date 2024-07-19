@@ -1,6 +1,6 @@
 export class GetVehicleResponse {
     public type: string;
-    public userId: number;
+    public userId: string;
     public stars: number;
     public brand: string;
     public model: string;
@@ -15,7 +15,7 @@ export class GetVehicleResponse {
 
     constructor(
         type: string,
-        userId: number,
+        userId: string,
         stars: number,
         brand: string,
         model: string,

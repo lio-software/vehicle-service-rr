@@ -2,8 +2,8 @@ import { Column, DataType, Model, Table } from "sequelize-typescript";
 
 export interface CommentAttributes {
     id: number;
-    vehicleId: number;
-    userId: number;
+    vehicleId: string;
+    userId: string;
     stars: number;
     text: string;
     uuid: string;
@@ -26,15 +26,15 @@ export default class CommentModel extends Model implements CommentAttributes {
 
     @Column({
         allowNull: false,
-        type: DataType.INTEGER,
+        type: DataType.STRING,
     })
-    declare vehicleId: number;
+    declare vehicleId: string;
 
     @Column({
         allowNull: false,
-        type: DataType.INTEGER,
+        type: DataType.STRING,
     })
-    declare userId: number;
+    declare userId: string;
 
     @Column({
         allowNull: false,

@@ -3,7 +3,7 @@ import { Column, DataType, Model, Table } from "sequelize-typescript";
 export interface VehicleAttributes {
     id: number;
     type: string;
-    userId: number;
+    userId: string;
     stars: number;
     brand: string;
     model: string;
@@ -39,9 +39,9 @@ export default class VehicleModel extends Model implements  VehicleAttributes {
 
     @Column({
         allowNull: false,
-        type: DataType.INTEGER,
+        type: DataType.STRING,
     })
-    declare userId: number;
+    declare userId: string;
 
     @Column({
         allowNull: true,
