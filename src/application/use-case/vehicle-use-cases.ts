@@ -1,14 +1,15 @@
-import { GetVehicleResponse } from "@src/domain/entities/dtos/responses/get-vehicle.response";
+import { GetVehicleResponse } from "../../domain/entities/dtos/responses/get-vehicle.response";
 import { CommentEntity } from "../../domain/entities/comment.entity";
 import { VehicleEntity } from "../../domain/entities/vehicle.entity";
 import { VehicleInterface } from "../../domain/interfaces/vehicle.interface";
 import signale from "signale";
-import { UpdateVehicleRequest } from "@src/domain/entities/dtos/requests/update-vehicle.request";
+import { UpdateVehicleRequest } from "../../domain/entities/dtos/requests/update-vehicle.request";
+import { CreateVehicleRequest } from "../../domain/entities/dtos/requests/create-vehicle.request";
 
 export class VehicleUseCases {
     constructor(readonly vehicleRepository: VehicleInterface) {}
 
-    async createVehicle(vehicle: VehicleEntity): Promise<string | null> {
+    async createVehicle(vehicle: CreateVehicleRequest): Promise<string | null> {
         const createdVehicle = await this.vehicleRepository.createVehicle(vehicle);
 
         if (!createdVehicle) {
