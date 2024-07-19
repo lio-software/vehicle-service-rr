@@ -12,8 +12,9 @@ const logger = new Signale();
 
 dotenv.config();
 app.use(express.json());
-app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
+app.use(morgan("dev"));
+
 const PORT = process.env.PORT || 3003;
 const API_PREFIX = process.env.API_PREFIX || "/api/v1";
 
