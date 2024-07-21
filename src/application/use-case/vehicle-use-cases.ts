@@ -86,7 +86,7 @@ export class VehicleUseCases {
         return true;
     }
 
-    async getVehicleByUserUuid(uuid: string): Promise<VehicleEntity[]> {
+    async getVehicleByUserUuid(uuid: string): Promise<GetVehicleResponse[]> {
         const vehicles = await this.vehicleRepository.getVehicleByUserUuid(uuid);
 
         if (!vehicles) {

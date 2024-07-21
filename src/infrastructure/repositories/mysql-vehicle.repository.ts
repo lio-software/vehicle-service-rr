@@ -8,7 +8,6 @@ import { UpdateVehicleRequest } from "../../domain/entities/dtos/requests/update
 import { CreateVehicleRequest } from "../../domain/entities/dtos/requests/create-vehicle.request";
 import VehicleImageModel from "../../database/mysql/models/vehicle-image.model";
 import sendMessageAndWaitForResponse from "../services/rabbit/saga.messagin";
-import { Op } from "sequelize";
 
 export class MysqlVehicleRepository implements VehicleInterface {
     public async createVehicle(vehicle: CreateVehicleRequest): Promise<string | null> {
@@ -165,20 +164,8 @@ export class MysqlVehicleRepository implements VehicleInterface {
 
     public async getVehicleByText(text: string): Promise<GetVehicleResponse[]> {
         try {
-            // Realizar la búsqueda en la base de datos utilizando un operador de búsqueda flexible
-            // como 'LIKE' o una función de búsqueda de texto completo, dependiendo de la configuración de la base de datos.
-            // Aquí se asume una búsqueda simple con 'LIKE' para múltiples campos.
-            const vehicles = await VehicleModel.findAll({
-                where: {
-                    [Op.or]: [
-                        { brand: { [Op.like]: `%${text}%` } },
-                        { model: { [Op.like]: `%${text}%` } },
-                        { description: { [Op.like]: `%${text}%` } },
-                        // Agregar más campos según sea necesario
-                    ]
-                }
-            });
-    
+            const vehicles = await VehicleModel.findAll();
+
             const response = await Promise.all(vehicles.map(async (vehicle) => {
                 const images = await VehicleImageModel.findAll({
                     where: {
@@ -203,14 +190,12 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicle.uuid
                 );
             }));
-    
+
             return response;
         } catch (error) {
-            console.error('Error fetching vehicles by text:', error);
             return [];
         }
     }
-
 
 
     public async updateVehicle(uuid: string, vehicle: UpdateVehicleRequest): Promise<string | null> {
