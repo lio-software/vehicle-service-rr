@@ -6,6 +6,9 @@ import { } from "../tsconfig.json";
 import cors from "cors";
 import syncConnection from "./database/mysql/connection";
 import { vehicleRouter } from "./infrastructure/routers/vehicle-router";
+import { consumeMessages } from "./infrastructure/services/rabbit/saga.consumer";
+import { declareOrderExchange } from "./infrastructure/services/rabbit/vehicleExchange";
+
 
 export const app = express();
 const logger = new Signale();
@@ -25,6 +28,10 @@ app.use(`${API_PREFIX}/vehicles`, vehicleRouter);
 
 async function startServer() {
     await syncConnection();
+
+    await declareOrderExchange();
+
+    await consumeMessages();
     app.listen(PORT, () => {
         logger.success(`Server running on http://localhost:${PORT}${API_PREFIX}`);
     });

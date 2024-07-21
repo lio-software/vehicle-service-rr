@@ -7,9 +7,12 @@ import { GetVehicleResponse } from "../../domain/entities/dtos/responses/get-veh
 import { UpdateVehicleRequest } from "../../domain/entities/dtos/requests/update-vehicle.request";
 import { CreateVehicleRequest } from "../../domain/entities/dtos/requests/create-vehicle.request";
 import VehicleImageModel from "../../database/mysql/models/vehicle-image.model";
+import sendMessageAndWaitForResponse from "../services/rabbit/saga.messagin";
+import { Op } from "sequelize";
 
 export class MysqlVehicleRepository implements VehicleInterface {
     public async createVehicle(vehicle: CreateVehicleRequest): Promise<string | null> {
+        console.log(vehicle);
         try {
             const createdVehicle = await VehicleModel.create({
                 type: vehicle.type,
@@ -35,6 +38,7 @@ export class MysqlVehicleRepository implements VehicleInterface {
 
             return createdVehicle.uuid;
         } catch (error) {
+            console.log(error);
             return null;
         }
     }
@@ -56,6 +60,13 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicleId: vehicle.id,
                 },
             });
+
+            const userId = vehicle.userId;
+
+            const response = await sendMessageAndWaitForResponse("getUserFromCar", { userId });
+
+            vehicle.userId = response.data;
+
 
             return new GetVehicleResponse(
                 vehicle.type,
@@ -154,8 +165,20 @@ export class MysqlVehicleRepository implements VehicleInterface {
 
     public async getVehicleByText(text: string): Promise<GetVehicleResponse[]> {
         try {
-            const vehicles = await VehicleModel.findAll();
-
+            // Realizar la búsqueda en la base de datos utilizando un operador de búsqueda flexible
+            // como 'LIKE' o una función de búsqueda de texto completo, dependiendo de la configuración de la base de datos.
+            // Aquí se asume una búsqueda simple con 'LIKE' para múltiples campos.
+            const vehicles = await VehicleModel.findAll({
+                where: {
+                    [Op.or]: [
+                        { brand: { [Op.like]: `%${text}%` } },
+                        { model: { [Op.like]: `%${text}%` } },
+                        { description: { [Op.like]: `%${text}%` } },
+                        // Agregar más campos según sea necesario
+                    ]
+                }
+            });
+    
             const response = await Promise.all(vehicles.map(async (vehicle) => {
                 const images = await VehicleImageModel.findAll({
                     where: {
@@ -180,12 +203,14 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicle.uuid
                 );
             }));
-
+    
             return response;
         } catch (error) {
+            console.error('Error fetching vehicles by text:', error);
             return [];
         }
     }
+
 
 
     public async updateVehicle(uuid: string, vehicle: UpdateVehicleRequest): Promise<string | null> {
@@ -235,7 +260,7 @@ export class MysqlVehicleRepository implements VehicleInterface {
             return false;
         }
     }
-    public async getVehicleByUserUuid(uuid: string): Promise<VehicleEntity[]> {
+    public async getVehicleByUserUuid(uuid: string): Promise<GetVehicleResponse[]> {
         try {
             const vehicles = await VehicleModel.findAll({
                 where: {
@@ -243,9 +268,14 @@ export class MysqlVehicleRepository implements VehicleInterface {
                 },
             });
 
-            return vehicles.map((vehicle) => {
-                return new VehicleEntity(
-                    vehicle.id,
+            const response = await Promise.all(vehicles.map(async (vehicle) => {
+                const images = await VehicleImageModel.findAll({
+                    where: {
+                        vehicleId: vehicle.id,
+                    },
+                });
+
+                return new GetVehicleResponse(
                     vehicle.type,
                     vehicle.userId,
                     vehicle.stars,
@@ -258,9 +288,12 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicle.avalible,
                     vehicle.address,
                     vehicle.description,
+                    images.map((image) => image.imageUrl),
                     vehicle.uuid
                 );
-            });
+            }));
+
+            return response;
         } catch (error) {
             return [];
         }
@@ -300,6 +333,11 @@ export class MysqlVehicleRepository implements VehicleInterface {
                     vehicleId: foundVehicle.id,
                 },
             });
+
+            for (const comment of comments) {
+                const response = await sendMessageAndWaitForResponse("getUserFromCar", { userId: comment.userId });
+                comment.userId = response.data;
+            }
 
             return comments.map((comment) => {
                 return new CommentEntity(

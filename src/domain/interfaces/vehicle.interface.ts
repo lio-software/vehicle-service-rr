@@ -12,7 +12,7 @@ export interface VehicleInterface {
     getVehicleByText(text: string): Promise<GetVehicleResponse[]>;
     updateVehicle(uuid: string, vehicle: UpdateVehicleRequest): Promise<string | null>;
     deleteVehicle(id: string): Promise<boolean>;
-    getVehicleByUserUuid(uuid: string): Promise<VehicleEntity[]>;
+    getVehicleByUserUuid(uuid: string): Promise<GetVehicleResponse[]>;
     addCommentToVehicle(vehicleUuid: string, comment: CommentEntity): Promise<string | null>;
     getCommentsFromVehicle(vehicleUuid: string): Promise<CommentEntity[]>;
 

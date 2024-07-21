@@ -10,7 +10,7 @@ vehicleRouter.post("/", vehicleController.createVehicle.bind(vehicleController))
 vehicleRouter.get("/:uuid", vehicleController.getVehicleByUuid.bind(vehicleController));
 vehicleRouter.get("/", vehicleController.getVehicles.bind(vehicleController));
 vehicleRouter.get("/get/avalible", vehicleController.getAvalibleVehicles.bind(vehicleController))
-vehicleRouter.get("/:text", vehicleController.getVehiclesByText.bind(vehicleController));
+vehicleRouter.get("/search/:text", vehicleController.getVehiclesByText.bind(vehicleController));
 vehicleRouter.put("/:uuid", vehicleController.updateVehicle.bind(vehicleController));
 vehicleRouter.delete("/:uuid", vehicleController.deleteVehicle.bind(vehicleController));
 vehicleRouter.get("/user/:uuid", vehicleController.getVehicleByUserUuid.bind(vehicleController));
