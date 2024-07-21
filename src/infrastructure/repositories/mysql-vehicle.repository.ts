@@ -8,6 +8,8 @@ import { UpdateVehicleRequest } from "../../domain/entities/dtos/requests/update
 import { CreateVehicleRequest } from "../../domain/entities/dtos/requests/create-vehicle.request";
 import VehicleImageModel from "../../database/mysql/models/vehicle-image.model";
 import sendMessageAndWaitForResponse from "../services/rabbit/saga.messagin";
+import { Op } from "sequelize";
+import sequelize from "sequelize";
 
 export class MysqlVehicleRepository implements VehicleInterface {
     public async createVehicle(vehicle: CreateVehicleRequest): Promise<string | null> {
@@ -123,40 +125,84 @@ export class MysqlVehicleRepository implements VehicleInterface {
         }
     }
 
-    public async getAvalibleVehicles(): Promise<GetVehicleResponse[]> {
+    public async getAvalibleVehicles(keyword?: string): Promise<GetVehicleResponse[]> {
         try {
-            const vehicles = await VehicleModel.findAll({
-                where: {
-                    avalible: true
-                }
-            })
-
-            const response = await Promise.all(vehicles.map(async (vehicle) => {
-                const images = await VehicleImageModel.findAll({
+            if (keyword) {
+                const vehicles = await VehicleModel.findAll({
                     where: {
-                        vehicleId: vehicle.id,
+                        [Op.or]: [
+                            {
+                                brand: sequelize.where(sequelize.fn('LOWER', sequelize.col('brand')), 'LIKE', '%' + keyword.toLowerCase() + '%')
+                            },
+                            {
+                                model: sequelize.where(sequelize.fn('LOWER', sequelize.col('model')), 'LIKE', '%' + keyword.toLowerCase() + '%')
+                            },
+                        ],
+                        avalible: true,
                     },
                 });
 
-                return new GetVehicleResponse(
-                    vehicle.type,
-                    vehicle.userId,
-                    vehicle.stars,
-                    vehicle.brand,
-                    vehicle.model,
-                    vehicle.year,
-                    vehicle.color,
-                    vehicle.plate,
-                    vehicle.rentalPrice,
-                    vehicle.avalible,
-                    vehicle.address,
-                    vehicle.description,
-                    images.map((image) => image.imageUrl),
-                    vehicle.uuid
-                );
-            }));
+                const response = await Promise.all(vehicles.map(async (vehicle) => {
+                    const images = await VehicleImageModel.findAll({
+                        where: {
+                            vehicleId: vehicle.id,
+                        },
+                    });
 
-            return response;
+                    return new GetVehicleResponse(
+                        vehicle.type,
+                        vehicle.userId,
+                        vehicle.stars,
+                        vehicle.brand,
+                        vehicle.model,
+                        vehicle.year,
+                        vehicle.color,
+                        vehicle.plate,
+                        vehicle.rentalPrice,
+                        vehicle.avalible,
+                        vehicle.address,
+                        vehicle.description,
+                        images.map((image) => image.imageUrl),
+                        vehicle.uuid
+                    );
+                }));
+
+                return response;
+            } else {
+                const vehicles = await VehicleModel.findAll({
+                    where: {
+                        avalible: true,
+                    },
+                });
+
+                const response = await Promise.all(vehicles.map(async (vehicle) => {
+                    const images = await VehicleImageModel.findAll({
+                        where: {
+                            vehicleId: vehicle.id,
+                        },
+                    });
+
+                    return new GetVehicleResponse(
+                        vehicle.type,
+                        vehicle.userId,
+                        vehicle.stars,
+                        vehicle.brand,
+                        vehicle.model,
+                        vehicle.year,
+                        vehicle.color,
+                        vehicle.plate,
+                        vehicle.rentalPrice,
+                        vehicle.avalible,
+                        vehicle.address,
+                        vehicle.description,
+                        images.map((image) => image.imageUrl),
+                        vehicle.uuid
+                    );
+                }));
+
+                return response;
+            }
+
         } catch (error) {
             return [];
         }
@@ -164,7 +210,11 @@ export class MysqlVehicleRepository implements VehicleInterface {
 
     public async getVehicleByText(text: string): Promise<GetVehicleResponse[]> {
         try {
-            const vehicles = await VehicleModel.findAll();
+            const vehicles = await VehicleModel.findAll({
+                where: {
+                    firstname: sequelize.where(sequelize.fn('LOWER', sequelize.col('firstname')), 'LIKE', '%' + text.toLowerCase() + '%')
+                }
+            })
 
             const response = await Promise.all(vehicles.map(async (vehicle) => {
                 const images = await VehicleImageModel.findAll({

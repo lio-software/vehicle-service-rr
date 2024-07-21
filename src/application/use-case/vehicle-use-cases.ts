@@ -42,8 +42,8 @@ export class VehicleUseCases {
         return vehicles;
     }
 
-    async getAvalibleVehicles(): Promise<GetVehicleResponse[]> {
-        const vehicles = await this.vehicleRepository.getAvalibleVehicles();
+    async getAvalibleVehicles(keyword?: string): Promise<GetVehicleResponse[]> {
+        const vehicles = await this.vehicleRepository.getAvalibleVehicles(keyword);
 
         if (!vehicles) {
             signale.error("Vehicles not found");

@@ -8,7 +8,7 @@ export interface VehicleInterface {
     createVehicle(vehicle: CreateVehicleRequest): Promise<string | null>;
     getVehicleByUuid(id: string): Promise<GetVehicleResponse | null>;
     getVehicles(): Promise<GetVehicleResponse[]>;
-    getAvalibleVehicles(): Promise<GetVehicleResponse[]>;
+    getAvalibleVehicles(keyword?: string): Promise<GetVehicleResponse[]>;
     getVehicleByText(text: string): Promise<GetVehicleResponse[]>;
     updateVehicle(uuid: string, vehicle: UpdateVehicleRequest): Promise<string | null>;
     deleteVehicle(id: string): Promise<boolean>;

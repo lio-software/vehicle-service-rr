@@ -77,7 +77,8 @@ export class VehicleController {
 
     async getAvalibleVehicles(req: any, res: any): Promise<void> {
         try {
-            const vehicles = await this.vehicleUseCases.getAvalibleVehicles();
+            const keyword = req.query.search as string;
+            const vehicles = await this.vehicleUseCases.getAvalibleVehicles(keyword);
 
             if (!vehicles) {
                 const response = new BaseResponse({}, "Avalible vehicles not found");
