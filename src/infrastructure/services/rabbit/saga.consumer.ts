@@ -3,7 +3,7 @@ import { VehicleUseCases } from "../../../application/use-case/vehicle-use-cases
 import { MysqlVehicleRepository } from "../../repositories/mysql-vehicle.repository";
 
 export const consumeMessages = async () => {
-    const connection = await amqp.connect('amqp://127.0.0.1');
+    const connection = await amqp.connect('amqp://rabbit');
     const channel    = await connection.createChannel();
     const exchange   = 'saga_exchange';
     const queue      = 'cars_queue';

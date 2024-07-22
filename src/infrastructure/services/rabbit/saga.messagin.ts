@@ -2,7 +2,7 @@ import * as amqp from 'amqplib';
 
 const sendMessageAndWaitForResponse = async (event:string,data:any):Promise<any> =>{
 
-    const connection = await amqp.connect("amqp://127.0.0.1");
+    const connection = await amqp.connect("amqp://rabbit");
     const channel    = await connection.createChannel();
     const exchange   = 'saga_users_exchange';
 
